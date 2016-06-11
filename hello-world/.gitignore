@@ -37,6 +37,6 @@ jspm_packages
 .node_repl_history
 
 # typescript
-*.js
+hello-world-server.js
 *.js.map
 typings/
