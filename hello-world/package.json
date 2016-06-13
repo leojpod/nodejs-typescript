@@ -2,7 +2,7 @@
   "name": "hello-world",
   "version": "1.0.0",
   "description": "hello world with node and typescript",
-  "main": "hello-world-server.ts",
+  "main": "hello-world-server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --exec ts-node hello-world-server.ts"
@@ -20,5 +20,12 @@
   "bugs": {
     "url": "https://github.com/leojpod/nodejs-typescript/issues"
   },
-  "homepage": "https://github.com/leojpod/nodejs-typescript#readme"
+  "homepage": "https://github.com/leojpod/nodejs-typescript#readme",
+  "dependencies": {
+    "async-fibo": "^2.0.0",
+    "typescript": "^1.8.10"
+  },
+  "devDependencies": {
+    "tslint": "^3.11.0"
+  }
 }
