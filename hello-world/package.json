@@ -5,7 +5,8 @@
   "main": "hello-world-server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --exec ts-node hello-world-server.ts"
+    "dev": "nodemon --exec ts-node hello-world-server.ts",
+    "postinstall": "typings install"
   },
   "repository": {
     "type": "git",
