@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/leojpod/nodejs-typescript#readme",
   "dependencies": {
+    "async": "^2.0.0-rc.6",
     "async-fibo": "^2.0.0",
     "typescript": "^1.8.10"
   },
