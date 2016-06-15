@@ -19,7 +19,8 @@
   },
   "scripts": {
     "postinstall": "typings install",
-    "pretest": "node node_modules/typescript/bin/tsc ts-tests/*ts -outDir tests --module commonjs --target es6",
-    "test": "mocha"
+    "dev": "nodemon --exec ts-node src/app.js",
+    "serve": "ts-node src/app.js",
+    "test": "node ./node_modules/mocha/bin/_mocha --ui bdd --recursive ./tests"
   }
 }

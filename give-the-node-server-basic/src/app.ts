@@ -27,6 +27,8 @@ http.createServer((request: ServerRequest, response: ServerResponse) => {
       response.setHeader(header, corsHeaders[header].toString());
     }
   }
+
+  console.log('[%s] %s', request.method, request.url);
   response.setHeader('Content-Type', 'application/json');
   let augmentedRequest: AugmentedRequest = new AugmentedRequest(request);
   switch (request.method) {
@@ -63,3 +65,5 @@ http.createServer((request: ServerRequest, response: ServerResponse) => {
       routeRequest(augmentedRequest, response);
   }
 }).listen(8888);
+
+console.log('server started');

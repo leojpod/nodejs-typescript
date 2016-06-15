@@ -12,7 +12,6 @@ import { Users } from './routes/users';
 import { Url } from 'url';
 
 export function routeRequest(req: AugmentedRequest, res: ServerResponse): void {
-  
   let reqUrl: Url = url.parse(req.request.url);
   let segments: string[] = reqUrl.pathname.split('/');
   switch (segments[1]) {
