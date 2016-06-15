@@ -1,0 +1,16 @@
+{
+  "globalDependencies": {
+    "async": "registry:dt/async#1.4.2+20160602152629",
+    "mocha": "registry:dt/mocha#2.2.5+20160317120654",
+    "node": "registry:env/node#4.0.0+20160507210304",
+    "should": "registry:dt/should#8.1.1+20160521152556"
+  },
+  "dependencies": {
+    "jsonwebtoken": "registry:npm/jsonwebtoken#5.5.4+20160208220328"
+  },
+  "globalDevDependencies": {
+    "chai": "registry:dt/chai#3.4.0+20160317120654",
+    "superagent": "registry:dt/superagent#1.4.0+20160317120654",
+    "supertest": "registry:dt/supertest#1.1.0+20160317120654"
+  }
+}
