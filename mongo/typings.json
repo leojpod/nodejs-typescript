@@ -1,0 +1,7 @@
+{
+  "globalDependencies": {
+    "async": "registry:dt/async#1.4.2+20160602152629",
+    "mongodb": "registry:dt/mongodb#2.1.0+20160602142941",
+    "node": "registry:env/node#6.0.0+20160610031852"
+  }
+}
