@@ -5,7 +5,7 @@ import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import * as path from 'path';
 import ExpressValidator = require('express-validator');
-import {MongoClient, Db} from 'mongodb';
+import * as mongoose from 'mongoose';
 
 import {IRequest} from './interfaces';
 import {router as authenticateRoutes} from './routes/authenticate';
@@ -50,15 +50,14 @@ namespace GiveTheNod {
     next();
   });
 
-  let db: Db;
-  MongoClient.connect('mongodb://localhost:27017/give-the-nod', (err: Error, dbAccess: Db) => {
-    db = dbAccess;
+  let dbReady: boolean = false;
+  mongoose.connect('mongodb://localhost:27017/give-the-nod', (error: any) => {
+    dbReady = true;
   });
 
+
   app.use((req: IRequest, res: Response, next: NextFunction) => {
-    if (db) {
-      req.db = db;
-      console.log('adding the db access');
+    if (dbReady) {
       next();
     } else {
       next(new Error('there is no DB connection!'));

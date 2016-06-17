@@ -15,7 +15,8 @@
     "should": "registry:dt/should#8.1.1+20160521152556"
   },
   "dependencies": {
-    "jsonwebtoken": "registry:npm/jsonwebtoken#5.5.4+20160208220328"
+    "jsonwebtoken": "registry:npm/jsonwebtoken#5.5.4+20160208220328",
+    "mongoose": "registry:npm/mongoose#4.3.5+20160610145311"
   },
   "globalDevDependencies": {
     "chai": "registry:dt/chai#3.4.0+20160317120654",

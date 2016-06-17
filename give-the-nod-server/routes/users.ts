@@ -3,20 +3,19 @@ import * as bcrypt from 'bcrypt';
 import {Router, Response} from 'express';
 import {NextFunction} from 'express';
 import jsonApiSerializer = require('jsonapi-serializer');
-import {IUser} from '../models/user';
+import {IUser, User} from '../models/user';
 import {Authentication} from '../authentication';
 import {userSerializer} from '../serializers/user-serializer';
 import {IRequest} from '../interfaces';
-import {ObjectID} from "mongodb";
 
 namespace UserRoutes {
   'use strict';
 
   export const router: Router = Router();
-  // router.use(function (req, res, next) {
-  //   console.log('this is just an empty middleware');
-  //   next();
-  // });
+  router.use(function (req, res, next) {
+    console.log('this is just an empty middleware');
+    next();
+  });
   router.post('/', function (req: IRequest, res: Response, next: NextFunction): void {
     console.log('let us create a user please');
     // validate incoming data:
@@ -50,26 +49,8 @@ namespace UserRoutes {
           return;
         }
         // at this point we "parsed" the data from the request's body into a IUser
-        let insertedUser: IUser;
+        let mongooseUser: IUser;
         async.series([
-          (done) => {
-            // 1 - check for existing user
-            req.db.collection('users')
-              .find({$or: [{name: user.name}, {email: user.email}]})
-              .toArray((userLookupErr, users) => {
-                if (userLookupErr) {
-                  next(userLookupErr);
-                }
-                if (users.length > 0) {
-                  // there is already a user:
-                  done(new Error('name or email already taken'));
-                  // of course in reality we would check for which field is already taken
-                } else {
-                  // all good dude
-                  done();
-                }
-              });
-          },
           (done) => {
             // 2 - encrypt the password
             bcrypt.hash(user.password, 10, (hashErr, hashedPwd) => {
@@ -84,20 +65,12 @@ namespace UserRoutes {
           },
           (done) => {
             // 3 - create the user if we are good
-            req.db.collection('users').insertOne(user, (insertError, report) => {
-              if (insertError) {
-                console.log('insertion failed');
-                next(insertError);
-                done(new Error('500 db messed up'));
+            mongooseUser = new User(user);
+            mongooseUser.save((saveErr) => {
+              if (saveErr) {
+                done(saveErr);
                 return;
               }
-              if (!report.insertedId) {
-                console.log('there was no insert');
-                next(new Error('the user creation failed!'));
-                done(new Error('500 db messed up'));
-                return;
-              }
-              insertedUser = report.ops[0];
               done();
             });
           }
@@ -105,7 +78,7 @@ namespace UserRoutes {
           if (processErr) {
             res.status(403).json({error: processErr.toString(), success: false});
           } else {
-            res.status(200).json(userSerializer.serialize(insertedUser));
+            res.status(200).json(userSerializer.serialize(mongooseUser));
           }
         });
       });
@@ -115,7 +88,7 @@ namespace UserRoutes {
   router.use(Authentication.authenticatedRoute);
 
   router.get('/', function (req: IRequest, res: Response, next: NextFunction): void {
-    req.db.collection('users').find().toArray((err, users) => {
+    User.findAll((err, users) => {
       if (err) {
         next(err);
         return;
@@ -135,15 +108,13 @@ namespace UserRoutes {
       return;
     }
     console.log('req.params.id -> ', req.params.id);
-    req.db.collection('users')
-      .find({_id: new ObjectID(req.params.id)}).limit(1)
-      .toArray((err, users) => {
+    User.findById(req.params.id, (err, user) => {
         if (err) {
           next(err);
           return;
         }
-        if (users.length > 0) {
-          res.json(userSerializer.serialize(users[0]));
+        if (user) {
+          res.json(userSerializer.serialize(user));
         } else {
           res.json(userSerializer.serialize(null));
         }

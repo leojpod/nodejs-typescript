@@ -37,7 +37,6 @@ namespace AuthenticateRouter {
     let userIdentifier: string = req.body.identifier;
     let password: string = req.body.password;
 
-    // fake DATA for now:
     req.db.collection('users')
       .find({$or: [{name: userIdentifier}, {email: userIdentifier}]}).limit(1)
       .toArray((toArrayErr: Error, users: IUser[]) => {
