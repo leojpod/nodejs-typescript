@@ -2,7 +2,7 @@ import {Router, Response, Request} from 'express';
 import jsonApiSerializer = require('jsonapi-serializer');
 import {NextFunction} from 'express';
 import * as async from 'async';
-import {IPoll} from '../models/poll';
+import {IPoll, Poll} from '../models/poll';
 import {pollSerializer} from '../serializers/poll-serializer';
 import {Authentication} from '../authentication';
 import {IRequest} from '../interfaces';
@@ -19,35 +19,37 @@ namespace PollRouter {
   export const router: Router = Router();
 
   router.get('/', function (req: IRequest, res: Response, next: NextFunction): void {
-    req.db.collection('polls').find().toArray((err, polls: IPoll[]) => {
-      if (err) {
-        next(err);
+    function handlePolls(polls: IPoll[]) {
+      async.each(polls, (poll, done) => {
+        // populate each poll with its author
+        poll.populate('author', done);
+      }, (popErr) => {
+        if (popErr) {
+          next(popErr);
+          return;
+        }
+        // serialize and return
+        res.status(200).json(pollSerializer.serialize(polls));
+      });
+    }
+    if (req.query.author) {
+      req.checkQuery('author', 'not an Object Id').isMongoId();
+      let errors: Dictionary<any> = req.validationErrors();
+      if (errors) {
+        res.status(403).json({
+          errors: errors,
+          success: false,
+        });
         return;
       }
-      // we now have the polls:
-      // let's load the authors
-      async.each(polls, (poll: IPoll, done) => {
-        req.db.collection('users').find({_id: new ObjectID(poll.author_id)}).toArray((userErr, users) => {
-          if (userErr) {
-            done(userErr);
-            return;
-          }
-          if (users.length !== 1) {
-            done(new Error('there is something wrong in our data'));
-            return;
-          }
-          // we got the author let's put it in our record
-          poll.author = users[0];
-          done();
-        });
-      }, (authorFetchingErr) => {
-        if (authorFetchingErr) {
-          next(authorFetchingErr);
-        } else {
-          res.status(200).json(pollSerializer.serialize(polls));
-        }
+      Poll.findByAuthor(req.query.author, (err, polls) => {
+        handlePolls(polls);
       });
-    });
+    } else {
+      Poll.findAll((err, polls: IPoll[]) => {
+        handlePolls(polls);
+      });
+    }
   });
 
   router.get('/:id', function (req: IRequest, res: Response, next: NextFunction): void {

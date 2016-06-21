@@ -68,7 +68,7 @@ namespace GiveTheNod {
   app.use('/polls', pollsRoutes);
   app.use('/users', usersRoutes);
 
-  let err: Error;
+  let err: any;
   // catch 404 and forward to error handler
   app.use(function (req: IRequest, res: Response, next: NextFunction): void {
     err = new Error('Not Found');
